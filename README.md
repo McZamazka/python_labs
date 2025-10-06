@@ -1,59 +1,79 @@
 **Прграммирование и алгоритмизация (Лабараторные)**
 
-**Лабараторная №1:**
+**Лабараторная №2:**
 
 **Задание №1:**
 ```python
-name = input("Имя: ")
-age = int(input("Возраст: "))
-print("Првиет, " + name + "!", "Через год тебе будет " + str(age+1) + ".")
+def min_max(nums: list[float | int]) -> tuple[float | int, float | int]:
+    if not nums:
+        raise ValueError("Список пуст")
+    return(min(nums), max(nums))
+
+
+def unique_sorted(nums: list[float | int]) -> list[float | int]:
+    return sorted(set(nums))
+
+
+def flatten(mat: list[list | tuple]) -> list:
+    result = []
+    for row in mat:
+        if not isinstance(row, (list, tuple)):
+            raise TypeError("Элемент не является списком или кортежем")
+        result.extend(row)
+    return result
 ```
 
-![exe1](/images/lab01/exe01.png)
+![exe1](/images/lab02/exe01.png)
 ----------------------------------------------------
 **Задание №2:**
 ```python
-a = input()
-b = float(input())
-print("a: " + a.replace('.', ','))
-print("b: " + str(b))
-print("sum=" + f"{(float(a)+b):.2f}" + ";" + " avg=" + f"{(float(a)+b)/2:.2f}")
+def check_rectangular(mat):
+    if not mat:
+        return True
+    length = len(mat[0])
+    for row in mat:
+        if len(row) != length:
+            return False
+    return True
+
+
+def transpose(mat):
+    if not check_rectangular(mat):
+        raise ValueError("Рваная матрица")
+    if not mat:
+        return []
+    return [list(row) for row in zip(*mat)]
+
+
+def row_sums(mat):
+    if not check_rectangular(mat):
+        raise ValueError("Рваная матрица")
+    return [sum(row) for row in mat]
+
+
+def col_sums(mat):
+    if not check_rectangular(mat):
+        raise ValueError("Рваная матрица")
+    if not mat:
+        return []
+    return [sum(col) for col in zip(*mat)]
 ```
 
-![exe1](/images/lab01/exe02.png)
+![exe1](/images/lab02/exe02.png)
 ----------------------------------------------------
 **Задание №3:**
 ```python
-price = int(input())
-discount = int(input())
-vat = int(input())
+from typing import Tuple
 
-base = price * (1 - discount/100)
-vat_amount = base * (vat/100)
-total = base + vat_amount
+StudentRecord = Tuple[str, str, float]
 
-print("База после скидки: " + f"{base:.2f}" + " ₽")
-print("НДС: " + f"{vat_amount:.2f}" + " ₽")
-print("Итого к оплате: " + f"{total:.2f}" + " ₽")
+def format_record(rec: StudentRecord) -> str:
+    fio, group, gpa = rec
+    fio_parts = [part.strip() for part in fio.split()]
+    formatted_surname = fio_parts[0].capitalize()
+    initials = ''.join([f'{name[0].upper()}.' for name in fio_parts[1:]])
+    formatted_gpa = f'{gpa:.2f}'
+    formatted_record = f"{formatted_surname} {initials}, гр. {group}, GPA {formatted_gpa}"
+    return formatted_record
 ```
-
-![exe1](/images/lab01/exe03.png)
-----------------------------------------------------
-**Задание №4:**
-```python
-m = int(input("Минуты: "))
-print(str(m//60) + ":" + f"{(m%60):02d}")
-```
-
-![exe1](/images/lab01/exe04.png)
-----------------------------------------------------
-**Задание №5:**
-```python
-a, b, c = map(str, input().split())
-print("ФИО: ", a, b, c)
-print("Инициалы: ", a[0] + b[0] + c[0] + '.')
-print("Длина (символов): " + str(len(a) + len(b) + len(c) + 2))
-```
-
-![exe1](/images/lab01/exe05.png)
-----------------------------------------------------
+![exe1](/images/lab02/exe03.png)
