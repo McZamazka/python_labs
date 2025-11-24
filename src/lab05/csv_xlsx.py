@@ -2,6 +2,7 @@ import csv
 
 from openpyxl import Workbook
 
+
 def csv_to_xlsx(csv_path: str, xlsx_path: str) -> None:
     """
     Конвертирует CSV в XLSX.
@@ -24,7 +25,9 @@ def csv_to_xlsx(csv_path: str, xlsx_path: str) -> None:
 
     for column in ws.columns:
         min_len = 8
-        column_letter = column[0].column_letter   #сохраняем содержимое ячейки column[0] с помощью функции column_letter
+        column_letter = column[
+            0
+        ].column_letter  # сохраняем содержимое ячейки column[0] с помощью функции column_letter
 
         for cell in column:
             try:
@@ -41,4 +44,8 @@ def csv_to_xlsx(csv_path: str, xlsx_path: str) -> None:
     except FileExistsError as e:
         raise FileNotFoundError("Ошибка пути")
 
-csv_to_xlsx("/Users/zamazka/Documents/GitHub/python_labs/src/data/samples/people.csv", "/Users/zamazka/Documents/GitHub/python_labs/src/data/out/people.xlsx")
+
+csv_to_xlsx(
+    "/Users/zamazka/Documents/GitHub/python_labs/src/data/samples/people.csv",
+    "/Users/zamazka/Documents/GitHub/python_labs/src/data/out/people.xlsx",
+)

@@ -9,7 +9,6 @@ def normalize(text: str, *, casefold: bool = True, yo2e: bool = True) -> str:
     return text
 
 
-
 def tokenize(text: str) -> list[str]:
     allowed_chars = "a-zA-Zа-яёА-ЯЯЁ0-9- "
     text = re.sub(f"[^{allowed_chars}]", " ", text)
@@ -29,5 +28,6 @@ def top_n(freq: dict[str, int], n: int = 2) -> list[tuple[str, int]]:
     words = list(sorted(freq.items(), key=lambda x: (-x[1], x[0])))[:n]
     return words
 
-print(count_freq(["a","b","a","c","b","a"]))
-print(top_n(count_freq(["a","b","a","c","b","a"])))
+
+print(count_freq(["a", "b", "a", "c", "b", "a"]))
+print(top_n(count_freq(["a", "b", "a", "c", "b", "a"])))

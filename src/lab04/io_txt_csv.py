@@ -1,7 +1,9 @@
 from pathlib import Path
 import sys
-sys.path.append('/Users/zamazka/Documents/GitHub/python_labs/src/mylibbs/')
+
+sys.path.append("/Users/zamazka/Documents/GitHub/python_labs/src/mylibbs/")
 from text import *
+
 
 def read_text(path: str | Path, encoding: str = "utf-8") -> str:
     p = Path(path)
@@ -14,6 +16,7 @@ def read_text(path: str | Path, encoding: str = "utf-8") -> str:
     except UnicodeDecodeError as e:
         raise UnicodeDecodeError() from e
 
+
 txt = read_text("/Users/zamazka/Documents/GitHub/python_labs/src/data/input.txt")
 print(txt)
 
@@ -21,8 +24,10 @@ import csv
 from pathlib import Path
 from typing import Iterable, Sequence
 
-def write_csv(rows: Iterable[Sequence], path: str | Path,
-              header: tuple[str, ...] | None = None) -> None:
+
+def write_csv(
+    rows: Iterable[Sequence], path: str | Path, header: tuple[str, ...] | None = None
+) -> None:
     p = Path(path)
     rows = list(rows)
     with p.open("w", newline="", encoding="utf-8") as f:
@@ -42,4 +47,8 @@ def write_csv(rows: Iterable[Sequence], path: str | Path,
         else:
             w.writerows(rows)
 
-write_csv([("word","count"),("test",3)], "/Users/zamazka/Documents/GitHub/python_labs/src/data/report.csv")
+
+write_csv(
+    [("word", "count"), ("test", 3)],
+    "/Users/zamazka/Documents/GitHub/python_labs/src/data/report.csv",
+)

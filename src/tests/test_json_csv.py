@@ -2,7 +2,6 @@ import pytest
 import csv, json
 from pathlib import Path
 import sys
-sys.path.append('/Users/zamazka/Documents/GitHub/python_labs/src/lab05/')
 from csv_xlsx import *
 from json_csv import *
 

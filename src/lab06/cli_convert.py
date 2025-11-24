@@ -1,7 +1,8 @@
 import argparse
 import sys
-sys.path.append('/Users/zamazka/Documents/GitHub/python_labs/src/lab05')
-sys.path.append('/Users/zamazka/Documents/GitHub/python_labs/src/lab05/')
+
+sys.path.append("/Users/zamazka/Documents/GitHub/python_labs/src/lab05")
+sys.path.append("/Users/zamazka/Documents/GitHub/python_labs/src/lab05/")
 from csv_xlsx import *
 from json_csv import *
 
@@ -30,7 +31,7 @@ def main():
     elif args.cmd == "csv2xlsx":
         csv_to_xlsx(args.input, args.output)
 
-#python cli_convert.py json2csv --in /Users/zamazka/Documents/GitHub/python_labs/src/data/samples/people.json --out /Users/zamazka/Documents/GitHub/python_labs/src/data/out/people.csv
-#python cli_convert.py csv2json --in /Users/zamazka/Documents/GitHub/python_labs/src/data/samples/people.csv --out /Users/zamazka/Documents/GitHub/python_labs/src/data/out/people.json
-#python cli_convert.py csv_to_xlsx --in /Users/zamazka/Documents/GitHub/python_labs/src/data/samples/people.csv --out /Users/zamazka/Documents/GitHub/python_labs/src/data/out/people.xlsx
+    # python cli_convert.py json2csv --in /Users/zamazka/Documents/GitHub/python_labs/src/data/samples/people.json --out /Users/zamazka/Documents/GitHub/python_labs/src/data/out/people.csv
+    # python cli_convert.py csv2json --in /Users/zamazka/Documents/GitHub/python_labs/src/data/samples/people.csv --out /Users/zamazka/Documents/GitHub/python_labs/src/data/out/people.json
+    # python cli_convert.py csv_to_xlsx --in /Users/zamazka/Documents/GitHub/python_labs/src/data/samples/people.csv --out /Users/zamazka/Documents/GitHub/python_labs/src/data/out/people.xlsx
     main()

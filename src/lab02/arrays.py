@@ -1,7 +1,7 @@
 def min_max(nums: list[float | int]) -> tuple[float | int, float | int]:
     if not nums:
         raise ValueError("Список пуст")
-    return(min(nums), max(nums))
+    return (min(nums), max(nums))
 
 
 def unique_sorted(nums: list[float | int]) -> list[float | int]:
@@ -15,6 +15,8 @@ def flatten(mat: list[list | tuple]) -> list:
             raise TypeError("Элемент не является списком или кортежем")
         result.extend(row)
     return result
+
+
 print(min_max([3, -1, 5, 5, 0]))
 print(min_max([42]))
 print(min_max([-5, -2, -9]))

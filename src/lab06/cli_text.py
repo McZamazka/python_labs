@@ -1,7 +1,8 @@
 import argparse
 from pathlib import Path
 import sys
-sys.path.append('/Users/zamazka/Documents/GitHub/python_labs/src/mylibbs/')
+
+sys.path.append("/Users/zamazka/Documents/GitHub/python_labs/src/mylibbs/")
 from text import *
 
 
@@ -22,7 +23,7 @@ def main():
     args = parser.parse_args()
 
     if args.command == "cat":
-        #python  cli_text.py cat --input /Users/zamazka/Documents/GitHub/python_labs/src/data/samples/people.csv
+        # python  cli_text.py cat --input /Users/zamazka/Documents/GitHub/python_labs/src/data/samples/people.csv
         with open(args.input, "r", encoding="utf-8") as f:
             text = f.readlines()
             try:
@@ -35,7 +36,7 @@ def main():
                 print("Error")
 
     elif args.command == "stats":
-        #python  cli_text.py stats --input /Users/zamazka/Documents/GitHub/python_labs/src/data/samples/people.txt --top 5
+        # python  cli_text.py stats --input /Users/zamazka/Documents/GitHub/python_labs/src/data/samples/people.txt --top 5
         with open(args.input, "r", encoding="utf-8") as f:
             text = f.readlines()
             line_objects = {}
@@ -49,5 +50,7 @@ def main():
                     print(f"{word}: {count}")
             except ValueError:
                 print("Error")
+
+
 if __name__ == "__main__":
     main()
