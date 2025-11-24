@@ -1,229 +1,119 @@
-<h1>Прграммирование и алгоритмизация (Лабараторные)</h1>
+<h1>Прграммирование и алгоритмизация (Лабораторные)</h1>
 
-<h2>Лабараторная №5:</h2>
+<h2>Лабораторная №7:</h2>
 
-**Задание A:**
+**Задание №1:**
 ```python
-import json
-import csv
-from pathlib import Path
-
-def json_to_csv(json_path: str, csv_path: str) -> None:
-    """
-    Преобразует JSON-файл в CSV.
-    Поддерживает список словарей [{...}, {...}], заполняет отсутствующие поля пустыми строками.
-    Кодировка UTF-8. Порядок колонок — как в первом объекте или алфавитный (указать в README).
-    """
-
-    with open(json_path, encoding="utf-8") as f:
-        try:
-            people = json.load(f)  # считывает файл в формате json и возвращает объекты
-        except ValueError as e:
-            raise ValueError("Файл не должен быть пустым")
-
-    keys = list(people[0].keys())
-    list_object = set(keys)
-
-    for objects in people[1:]:
-        list_object.update(objects)
-    alb = sorted(list_object - set(keys))
-    fieldnames = keys + alb
-
-    p = Path(csv_path)
-    with p.open("w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
-        writer.writeheader()
-        for r in people:
-            r = {key: r.get(key, "") for key in fieldnames}
-            writer.writerow(r)
-json_to_csv("/Users/zamazka/Documents/GitHub/python_labs/src/data/samples/people.json", "/Users/zamazka/Documents/GitHub/python_labs/src/data/out/people_from_json.csv")
-
-def csv_to_json(csv_path: str, json_path: str) -> None:
-    """
-    Преобразует CSV в JSON (список словарей).
-    Заголовок обязателен, значения сохраняются как строки.
-    json.dump(..., ensure_ascii=False, indent=2)
-    """
-
-    with open(csv_path, encoding="utf-8") as f:
-        try:
-            people = csv.DictReader(f)
-            to_json = list(people)
-        except ValueError as e:
-            raise ValueError("Ошибка чтения")
-
-
-    with open(json_path, "w", encoding="utf-8") as f:
-        json.dump(to_json, f, ensure_ascii=False, indent=2)
-
-csv_to_json("/Users/zamazka/Documents/GitHub/python_labs/src/data/samples/people.csv", "/Users/zamazka/Documents/GitHub/python_labs/src/data/out/people_from_csv.json")
-```
-
-![exe1_1_1!](/images/lab05/exe1_1.png)
-![exe1_1_1!](/images/lab05/exe1_2.png)
-![exe1_1_1!](/images/lab05/exe1_3.png)
-![exe1_1_1!](/images/lab05/exe1_4.png)
-
-
-**Задание B:**
-```python
-import csv
-
-from openpyxl import Workbook
-
-def csv_to_xlsx(csv_path: str, xlsx_path: str) -> None:
-    """
-    Конвертирует CSV в XLSX.
-    Использовать openpyxl ИЛИ xlsxwriter.
-    Первая строка CSV — заголовок.
-    Лист называется "Sheet1".
-    Колонки — автоширина по длине текста (не менее 8 символов).
-    """
-    wb = Workbook()
-    ws = wb.active
-    ws.title = "Sheet1"
-
-    with open(csv_path, encoding="utf-8", newline="") as f:
-        try:
-            reader = csv.reader(f)
-            for row in reader:
-                ws.append(row)
-        except ValueError as e:
-            raise ValueError("Ошибка чтения")
-
-    for column in ws.columns:
-        min_len = 8
-        column_letter = column[0].column_letter   #сохраняем содержимое ячейки column[0] с помощью функции column_letter
-
-        for cell in column:
-            try:
-                if len(str(cell.value)) > min_len:
-                    min_len = len(str(cell.value))
-            except:
-                pass
-
-        col_width = min_len + 2
-        ws.column_dimensions[column_letter].width = col_width
-
-    try:
-        wb.save(xlsx_path)
-    except FileExistsError as e:
-        raise FileNotFoundError("Ошибка пути")
-
-csv_to_xlsx("/Users/zamazka/Documents/GitHub/python_labs/src/data/samples/people.csv", "/Users/zamazka/Documents/GitHub/python_labs/src/data/out/people.xlsx")
-```
-
-![exe1_1_1!](/images/lab05/exe1_2.png)
-![exe1_1_1!](/images/lab05/exe2.png)
-
-<h2>Лабараторная №6:</h2>
-
-**Задание A:**
-```python
-import argparse
-from pathlib import Path
-import sys
-sys.path.append('/Users/zamazka/Documents/GitHub/python_labs/src/mylibbs/')
+import pytest
 from text import *
 
 
-def main():
-    parser = argparse.ArgumentParser(description="CLI‑утилиты лабораторной №6")
-    subparsers = parser.add_subparsers(dest="command")
+@pytest.mark.parametrize(
+    "source, expected",
+    [
+        ("ПрИвЕт\nМИр\t", "привет мир"),
+        ("ёжик, Ёлка", "ежик, елка"),
+        ("Hello\r\nWorld", "hello world"),
+        ("  двойные   пробелы  ", "двойные пробелы"),
+    ],
+)
+def test_normalize_basic(source, expected):
+    assert normalize(source) == expected
 
-    # подкоманда cat
-    cat_parser = subparsers.add_parser("cat", help="Вывести содержимое файла")
-    cat_parser.add_argument("--input", required=True)
-    cat_parser.add_argument("-n", action="store_true", help="Нумеровать строки")
 
-    # подкоманда stats
-    stats_parser = subparsers.add_parser("stats", help="Частоты слов")
-    stats_parser.add_argument("--input", required=True)
-    stats_parser.add_argument("--top", type=int, default=5)
+@pytest.mark.parametrize(
+    "source, expected",
+    [
+        ("привет мир", ["привет", "мир"]),
+        ("hello,world!!!", ["hello", "world"]),
+        ("по-настоящему круто", ["по-настоящему", "круто"]),
+        ("2025 год", ["2025", "год"]),
+        ("emoji 😀 не слово", ["emoji", "не", "слово"]),
+    ],
+)
+def test_tokenize_basic(source, expected):
+    assert tokenize(source) == expected
 
-    args = parser.parse_args()
 
-    if args.command == "cat":
-        #python  cli_text.py cat --input /Users/zamazka/Documents/GitHub/python_labs/src/data/samples/people.csv
-        with open(args.input, "r", encoding="utf-8") as f:
-            text = f.readlines()
-            try:
-                for index, line in enumerate(text, 1):
-                    if args.n:
-                        print(f"{index}: {line}")
-                    else:
-                        print(f"{line}")
-            except ValueError:
-                print("Error")
+@pytest.mark.parametrize(
+    "source, expected",
+    [
+        (["a", "b", "a", "c", "b", "a"], {"a": 3, "b": 2, "c": 1}),
+        (["bb", "aa", "bb", "aa", "cc"], {"aa": 2, "bb": 2, "cc": 1}),
+    ],
+)
+def test_count_freq_and_top_n(source, expected):
+    assert count_freq(source) == expected
 
-    elif args.command == "stats":
-        #python  cli_text.py stats --input /Users/zamazka/Documents/GitHub/python_labs/src/data/samples/people.txt --top 5
-        with open(args.input, "r", encoding="utf-8") as f:
-            text = f.readlines()
-            line_objects = {}
-            try:
-                for line in text:
-                    line = line.split()
-                    for i in line:
-                        line_objects[i] = line_objects.get(i, 0) + 1
-                top_objects = top_n(line_objects, args.top)
-                for word, count in top_objects:
-                    print(f"{word}: {count}")
-            except ValueError:
-                print("Error")
-if __name__ == "__main__":
-    main()
+
+@pytest.mark.parametrize(
+    "source, n, expected",
+    [
+        ({"a": 3, "b": 2, "c": 1}, 2, [("a", 3), ("b", 2)]),
+    ],
+)
+def test_top_n_tie_breaker(source, n, expected):
+    assert top_n(source, n) == expected
+
 ```
 
-![exe1_1_1!](/images/lab06/exe2_1.png)
-![exe1_1_1!](/images/lab06/exe2_2.png)
-![exe1_1_1!](/images/lab05/exe1_1.png)
-![exe1_1_1!](/images/lab05/exe1_2.png)
-![exe1_1_1!](/images/lab05/exe1_3.png)
-![exe1_1_1!](/images/lab05/exe1_4.png)
+![exe1_1_1!](./images/lab07/exe1_1.png)
 
-**Задание B:**
+--------------------------------------------------------------------
+**Задание №2:**
 ```python
-import argparse
-import sys
-sys.path.append('/Users/zamazka/Documents/GitHub/python_labs/src/lab05')
-sys.path.append('/Users/zamazka/Documents/GitHub/python_labs/src/lab05/')
-from csv_xlsx import *
-from json_csv import *
+import pytest
+import csv, json
+from pathlib import Path
+from src.lab05.json_csv import json_to_csv, csv_to_json
 
 
-def main():
-    parser = argparse.ArgumentParser(description="Конвертеры данных")
-    sub = parser.add_subparsers(dest="cmd")
+def test_json_to_csv_roundtrip(tmp_path: Path):
+    src = tmp_path / "people.json"
+    dst = tmp_path / "people.csv"
+    data = [
+        {"name": "Alice", "age": 22},
+        {"name": "Bob", "age": 25},
+    ]
+    src.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+    json_to_csv(str(src), str(dst))
+    with dst.open(encoding="utf-8") as f:
+        rows = list(csv.DictReader(f))
+    assert len(rows) == 2
+    assert {"name", "age"} <= set(rows[0].keys())
 
-    p1 = sub.add_parser("json2csv")
-    p1.add_argument("--in", dest="input", required=True)
-    p1.add_argument("--out", dest="output", required=True)
 
-    p2 = sub.add_parser("csv2json")
-    p2.add_argument("--in", dest="input", required=True)
-    p2.add_argument("--out", dest="output", required=True)
+def test_csv_to_json_roundtrip(tmp_path: Path):
+    src = tmp_path / "people.csv"
+    dst = tmp_path / "people.json"
+    data = [{"name": "Alice", "age": 22}, {"name": "Bob", "age": 25}]
+    with open(src, "w", newline="", encoding="utf-8") as f:
+        fieldnames = list(data[0].keys())
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(data)
+    csv_to_json(str(src), str(dst))
+    with dst.open(encoding="utf-8") as f:
+        rows = json.load(f)
+    assert len(rows) == 2
 
-    p3 = sub.add_parser("csv2xlsx")
-    p3.add_argument("--in", dest="input", required=True)
-    p3.add_argument("--out", dest="output", required=True)
 
-    args = parser.parse_args()
-    if args.cmd == "json2csv":
-        json_to_csv(args.input, args.output)
-    elif args.cmd == "csv2json":
-        csv_to_json(args.input, args.output)
-    elif args.cmd == "csv2xlsx":
-        csv_to_xlsx(args.input, args.output)
+@pytest.mark.parametrize(
+    "function, input_file, error",
+    [
+        (json_to_csv, "people.json", ValueError),
+    ],
+)
+def test_json_to_csv(function, input_file, error, tmp_path: Path):
+    file_path = tmp_path / input_file
+    file_path.write_text("Error???", encoding="utf-8")
+    dst = tmp_path / "people.csv"
+    f = json_to_csv if function is json_to_csv else csv_to_json
+    with pytest.raises(error):
+        f(str(file_path), str(dst))
 
-#python cli_convert.py json2csv --in /Users/zamazka/Documents/GitHub/python_labs/src/data/samples/people.json --out /Users/zamazka/Documents/GitHub/python_labs/src/data/out/people.csv
-#python cli_convert.py csv2json --in /Users/zamazka/Documents/GitHub/python_labs/src/data/samples/people.csv --out /Users/zamazka/Documents/GitHub/python_labs/src/data/out/people.json
-#python cli_convert.py csv_to_xlsx --in /Users/zamazka/Documents/GitHub/python_labs/src/data/samples/people.csv --out /Users/zamazka/Documents/GitHub/python_labs/src/data/out/people.xlsx
-    main()
 ```
 
-![exe1_1_1!](/images/lab06/exe1_1.png)
-![exe1_1_1!](/images/lab06/exe1_2.png)
-![exe1_1_1!](/images/lab06/exe1_3.png)
-![exe1_1_1!](/images/lab06/exe1_4.png)
-![exe1_1_1!](/images/lab06/exe1_5.png)
+![exe1_1_1!](./images/lab07/exe2_1.png)
+![exe1_1_1!](./images/lab07/exeblack.png)
+-------------------------------------------
