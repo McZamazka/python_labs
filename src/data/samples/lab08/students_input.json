@@ -1,0 +1,12 @@
+[
+  {
+    "fio": "My name",
+    "birthdate": "2001-05-16",
+    "gpa": 4.6
+  },
+  {
+    "fio": "Xz name",
+    "birthdate": "2004-05-16",
+    "gpa": 1.2
+  }
+]

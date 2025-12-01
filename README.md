@@ -4,116 +4,112 @@
 
 **Задание №1:**
 ```python
-import pytest
-from text import *
+ifrom dataclasses import dataclass
+from datetime import datetime, date
 
+@dataclass
+class Student:
+    fio: str
+    birthdate: str
+    group: str
+    gpa: float
 
-@pytest.mark.parametrize(
-    "source, expected",
-    [
-        ("ПрИвЕт\nМИр\t", "привет мир"),
-        ("ёжик, Ёлка", "ежик, елка"),
-        ("Hello\r\nWorld", "hello world"),
-        ("  двойные   пробелы  ", "двойные пробелы"),
-    ],
-)
-def test_normalize_basic(source, expected):
-    assert normalize(source) == expected
+    def __post_init__(self):
+        # TODO: добавить нормальную валидацию формата даты и диапазона gpa
+        self.birthdate = self.birthdate.replace("-", "/")
+        try:
+            self.birthdate = datetime.strptime(self.birthdate, "%Y/%m/%d")
+        except ValueError:
+            raise ValueError("warning: birthdate format might be invalid")
 
+        if not (0 <= self.gpa <= 10):
+            raise ValueError("gpa must be between 0 and 10")
 
-@pytest.mark.parametrize(
-    "source, expected",
-    [
-        ("привет мир", ["привет", "мир"]),
-        ("hello,world!!!", ["hello", "world"]),
-        ("по-настоящему круто", ["по-настоящему", "круто"]),
-        ("2025 год", ["2025", "год"]),
-        ("emoji 😀 не слово", ["emoji", "не", "слово"]),
-    ],
-)
-def test_tokenize_basic(source, expected):
-    assert tokenize(source) == expected
+    def age(self) -> int:
+        # TODO: добавить нормальную валидацию формата даты и диапазона gpa
+        b = self.birthdate
+        today = date.today()
+        if today.month < b.month or (today.month == b.month and today.day < b.day):
+            return today.year - int(b.year) - 1
+        else:
+            return today.year - int(b.year)
 
+    def to_dict(self) -> dict:
+        # TODO: проверить полноценность полей
+        if not self.fio or not self.fio.strip():
+            raise ValueError("FIO cannot be empty")
 
-@pytest.mark.parametrize(
-    "source, expected",
-    [
-        (["a", "b", "a", "c", "b", "a"], {"a": 3, "b": 2, "c": 1}),
-        (["bb", "aa", "bb", "aa", "cc"], {"aa": 2, "bb": 2, "cc": 1}),
-    ],
-)
-def test_count_freq_and_top_n(source, expected):
-    assert count_freq(source) == expected
+        return {
+            "fio": self.fio,
+            "birthdate": self.birthdate.strftime("%Y-%m-%d"),
+            "gpa": self.gpa,
+        }
 
+    @classmethod
+    def from_dict(cls, d: dict):
+        for key, value in zip(d.keys(), list(d.values())):
+            print(f"{key}: {value}")
 
-@pytest.mark.parametrize(
-    "source, n, expected",
-    [
-        ({"a": 3, "b": 2, "c": 1}, 2, [("a", 3), ("b", 2)]),
-    ],
-)
-def test_top_n_tie_breaker(source, n, expected):
-    assert top_n(source, n) == expected
+    def __str__(self):
+        # TODO: f"{}, {}, {}"
+        return f"ФИО: {self.fio}, Дата рождения: {self.birthdate}, GPA: {self.gpa}, "
+
+st1 = Student("No name", "2007-12-20", "SE-01", 4.6)
+print(f"{st1.age()}\n----------------------------------")
+print(f"{st1.to_dict()}\n----------------------------------")
+st1.from_dict(st1.to_dict())
+print("----------------------------------")
+print(f"{st1.__str__()}")
 
 ```
 
-![exe1_1_1!](./images/lab07/exe1_1.png)
+![exe1_1_1!](./images/lab08/exe1.png)
 
 --------------------------------------------------------------------
 **Задание №2:**
 ```python
-import pytest
-import csv, json
+import json
 from pathlib import Path
-from src.lab05.json_csv import json_to_csv, csv_to_json
+import models
+from datetime import datetime, date
+
+# st_object = models.Student("My name", "2001-05-16", "BIVT-25-3", 4.6)
+students = [models.Student("My name", "2001-05-16", "BIVT-25-3", 4.6), models.Student("Xz name", "2004-05-16", "BIVT-66-6", 1.2)]
+
+def students_to_json(students: list, path):
+    data = [s.to_dict() for s in students]
+    try:
+        with open(path, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+    except:
+        raise FileNotFoundError("File not found")
+
+def students_from_json(path):
+    try:
+        with open(path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+    except:
+        raise FileNotFoundError("File not found")
+    data_gpa = [i.get('gpa') for i in data]
+    data_birth = [i.get('birthdate').replace("-", "/") for i in data]
+    try:
+        data_birth = [datetime.strptime(data_date, "%Y/%m/%d") for data_date in data_birth]
+    except:
+        raise ValueError("warning: birthdate format might be invalid")
+
+    if not (0 <= all(data_gpa) <= 10):
+        raise ValueError("warning: gpas must be between 1 and 10")
+
+    for key, val in zip(data, data_birth):
+        key["birthdate"] = val.strftime("%Y-%m-%d")
+
+    with open("/Users/zamazka/Documents/GitHub/python_labs/src/data/samples/lab08/students_output.json", 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
 
 
-def test_json_to_csv_roundtrip(tmp_path: Path):
-    src = tmp_path / "people.json"
-    dst = tmp_path / "people.csv"
-    data = [
-        {"name": "Alice", "age": 22},
-        {"name": "Bob", "age": 25},
-    ]
-    src.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
-    json_to_csv(str(src), str(dst))
-    with dst.open(encoding="utf-8") as f:
-        rows = list(csv.DictReader(f))
-    assert len(rows) == 2
-    assert {"name", "age"} <= set(rows[0].keys())
-
-
-def test_csv_to_json_roundtrip(tmp_path: Path):
-    src = tmp_path / "people.csv"
-    dst = tmp_path / "people.json"
-    data = [{"name": "Alice", "age": 22}, {"name": "Bob", "age": 25}]
-    with open(src, "w", newline="", encoding="utf-8") as f:
-        fieldnames = list(data[0].keys())
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
-        writer.writeheader()
-        writer.writerows(data)
-    csv_to_json(str(src), str(dst))
-    with dst.open(encoding="utf-8") as f:
-        rows = json.load(f)
-    assert len(rows) == 2
-
-
-@pytest.mark.parametrize(
-    "function, input_file, error",
-    [
-        (json_to_csv, "people.json", ValueError),
-    ],
-)
-def test_json_to_csv(function, input_file, error, tmp_path: Path):
-    file_path = tmp_path / input_file
-    file_path.write_text("Error???", encoding="utf-8")
-    dst = tmp_path / "people.csv"
-    f = json_to_csv if function is json_to_csv else csv_to_json
-    with pytest.raises(error):
-        f(str(file_path), str(dst))
-
+students_to_json(students, Path("/Users/zamazka/Documents/GitHub/python_labs/src/data/samples/lab08/students_input.json"))
+print(students_from_json("/Users/zamazka/Documents/GitHub/python_labs/src/data/samples/lab08/students_input.json"))
 ```
 
-![exe1_1_1!](./images/lab07/exe2_1.png)
-![exe1_1_1!](./images/lab07/exeblack.png)
+![exe1_1_1!](./images/lab08/exe2.png)
 -------------------------------------------
