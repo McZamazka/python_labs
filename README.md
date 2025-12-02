@@ -15,7 +15,6 @@ class Student:
     gpa: float
 
     def __post_init__(self):
-        # TODO: добавить нормальную валидацию формата даты и диапазона gpa
         self.birthdate = self.birthdate.replace("-", "/")
         try:
             self.birthdate = datetime.strptime(self.birthdate, "%Y/%m/%d")
@@ -26,7 +25,6 @@ class Student:
             raise ValueError("gpa must be between 0 and 10")
 
     def age(self) -> int:
-        # TODO: добавить нормальную валидацию формата даты и диапазона gpa
         b = self.birthdate
         today = date.today()
         if today.month < b.month or (today.month == b.month and today.day < b.day):
