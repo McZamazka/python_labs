@@ -3,8 +3,8 @@ from pathlib import Path
 import models
 from datetime import datetime, date
 
-# st_object = models.Student("My name", "2001-05-16", "BIVT-25-3", 4.6)
-students = [models.Student("My name", "2001-05-16", "BIVT-25-3", 4.6), models.Student("Xz name", "2004-05-16", "BIVT-66-6", 1.2)]
+# st_object = models.Student("My name", "2001-02-08", "BIVT-25-5", 4.6)
+students = [models.Student("My name", "2001-02-08", "BIVT-25-5", 4.6), models.Student("Xz name", "2004-05-16", "BIVT-66-6", 1.2)]
 
 def students_to_json(students: list, path):
     data = [s.to_dict() for s in students]
